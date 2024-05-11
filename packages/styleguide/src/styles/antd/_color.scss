@@ -1,0 +1,18 @@
+@include make-colors($errors);
+@include make-colors($primaries);
+@include make-colors($successes);
+@include make-colors($warnings);
+
+@include make-colors($corals);
+@include make-colors($cyans);
+@include make-colors($geekblues);
+@include make-colors($golds);
+@include make-colors($grays);
+@include make-colors($greens);
+@include make-colors($neutrals);
+@include make-colors($oranges);
+@include make-colors($pinks);
+@include make-colors($purples);
+@include make-colors($reds);
+@include make-colors($volcanoes);
+@include make-colors($yellows);

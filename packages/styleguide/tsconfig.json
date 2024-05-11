@@ -1,0 +1,36 @@
+{
+  "extends": "ts-config-single-spa",
+  "files": ["src/learnss-styleguide.ts"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "types": ["node"],
+    "skipLibCheck": true,
+    "allowJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "strict": false,
+    "strictPropertyInitialization": false,
+    "declarationDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "noImplicitAny": false,
+    "noLib": false,
+    "outDir": "dist",
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test*"]
+  
+}

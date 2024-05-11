@@ -2,12 +2,26 @@
   "name": "@learn-ss/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "start:all": "pnpm --parallel --filter \"./packages/*\" start",
+    "start:common": "nx start @learnss/common",
+    "build:common": "nx build @learnss/common",
+    "start:root-config": "nx start @learnss/root-config",
+    "build:root-config": "nx build @learnss/root-config",
+    "start:utils": "nx start @learnss/utils",
+    "build:utils": "nx build @learnss/utils",
+    "start:styleguide": "nx start @learnss/styleguide",
+    "build:styleguide": "nx build @learnss/styleguide",
+    "build:all": "pnpm --parallel --filter \"./packages/*\" build"
+  },
   "private": true,
   "dependencies": {},
   "devDependencies": {
     "@nx/js": "18.3.4",
     "@nx/workspace": "18.3.4",
     "nx": "18.3.4"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

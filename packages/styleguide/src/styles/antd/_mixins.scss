@@ -1,0 +1,58 @@
+@mixin make-headings($headings) {
+    @each $heading, $font-size in $headings {
+      .#{$heading} {
+        font-size: $font-size !important;
+        font-weight: 700 !important;
+      }
+    }
+  }
+  
+  @mixin make-sub-headings($sub-headings) {
+    @each $sub-heading, $font-size in $sub-headings {
+      .#{$sub-heading} {
+        font-size: $font-size !important;
+        font-weight: 500 !important;
+      }
+    }
+  }
+  
+  @mixin make-bodies($bodies) {
+    @each $body, $font-size in $bodies {
+      .#{$body} {
+        font-size: $font-size !important;
+        font-weight: 400 !important;
+      }
+    }
+  }
+  
+  @mixin make-colors($colors) {
+    @each $name, $color in $colors {
+      .#{$name} {
+        border-color: $color !important;
+        background-color: $color !important;
+      }
+  
+      .#{$name}--bg {
+        background-color: $color !important;
+      }
+  
+      .#{$name}--border {
+        border-color: $color !important;
+      }
+  
+      .#{$name}--text {
+        color: $color !important;
+      }
+    }
+  }
+  
+  @mixin error-focused {
+    border-color: #ff4d4f !important;
+    box-shadow: 0 0 0 2px rgba(245, 34, 45, 0.2) !important;
+  }
+  
+  @mixin input-focus {
+    border-color: $purple-6 !important;
+    box-shadow: 0 0 0 2px $purple-6-opacity !important;
+  }
+  
