@@ -20,7 +20,7 @@ type ConfigDatetime = {
   formatDateTime?: FormatDateStr[keyof FormatDateStr];
 };
 
-const defaultConfig = {
+const defaultConfig: ConfigDatetime = {
   isUTC: false,
   isAddDate: false,
   isShowTime: true,
@@ -28,59 +28,30 @@ const defaultConfig = {
   formatDateTime: FORMAT_DATE_STR.date,
 };
 
-export const getCurrTimezone = () => {
-  return dayjs.tz.guess();
-};
+const getCurrTimezone = () => dayjs.tz.guess();
 
-export const getDateTimeAbbr = (datetime: ItemDate) => {
-  return dayjs
-    .tz(datetime, getCurrTimezone())
-    .format(FORMAT_DATE_STR.datetimeAbbr);
-};
-
-export const isValidDatetime = (datetime: DateTime) => {
-  return dayjs(
+const isValidDatetime = (datetime: DateTime) =>
+  dayjs(
     datetime,
     [FORMAT_DATE_STR.dateDashedReverseTime24h, FORMAT_DATE_STR.iso],
     true
   ).isValid();
-};
 
-export const _parseTime12hTo24h = (
-  time12h: string,
-  formatTimeStr: FormatDateStr[keyof FormatDateStr] = FORMAT_DATE_STR.time24h
-) => {
-  return dayjs(dayjs().format(FORMAT_DATE_STR.ymdDash) + " " + time12h).format(
-    formatTimeStr
-  );
-};
+const parseToUTCByTimezone = (datetime: DateTime, format?: string) =>
+  dayjs
+    .tz(datetime, getCurrTimezone())
+    .utc()
+    .format(format || "YYYY-MM-DDTHH:mm:ss.SSS[Z]");
 
-const parseToUTCByTimezone = (datetime: DateTime, format?: string) => {
-  const timeWithoutZ = datetime.endsWith("Z")
-    ? datetime.slice(0, -1)
-    : datetime;
-  const mtzByTimezone = dayjs.tz(timeWithoutZ, getCurrTimezone());
-
-  return format
-    ? mtzByTimezone.utc().format(format)
-    : mtzByTimezone.utc().toISOString();
-};
-
-const parseFromUTCByTimezone = (datetime: DateTime, format?: string) => {
-  return dayjs
+const parseFromUTCByTimezone = (datetime: DateTime, format?: string) =>
+  dayjs
     .tz(datetime, getCurrTimezone())
     .format(format || FORMAT_DATE_STR.dateDashedReverseTime24h);
-};
 
-export const parseByTimezone = (
-  datetime: DateTime,
-  isUTC: boolean,
-  format?: string
-) => {
-  return isUTC
+const parseByTimezone = (datetime: DateTime, isUTC: boolean, format?: string) =>
+  isUTC
     ? parseToUTCByTimezone(datetime, format)
     : parseFromUTCByTimezone(datetime, format);
-};
 
 export const parseDateTime = (
   datetime: ItemDate,
@@ -88,9 +59,7 @@ export const parseDateTime = (
 ) => {
   const _config = { ...defaultConfig, ...config };
 
-  if (!datetime || !isValidDatetime(datetime as DateTime)) {
-    return undefined;
-  }
+  if (!datetime || !isValidDatetime(datetime as DateTime)) return;
 
   if (typeof datetime !== "string") {
     datetime = dayjs(datetime).format(_config.formatDateTime);
@@ -98,13 +67,13 @@ export const parseDateTime = (
 
   if (_config.isAddDate) {
     const currDate = dayjs().format(FORMAT_DATE_STR.ymdDash);
-    datetime = currDate + " " + _parseTime12hTo24h(datetime) + ".000Z";
+    datetime = `${currDate} ${dayjs(datetime).format("HH:mm:ss")}.000Z`;
   }
 
   return _config.formatByTimezone
     ? parseByTimezone(
         datetime as DateTime,
-        _config.isUTC,
+        !!_config.isUTC,
         _config.formatDateTime
       )
     : !_config.isShowTime

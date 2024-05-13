@@ -85,7 +85,7 @@ module.exports = (webpackConfigEnv, argv) => {
           use: [
             "cache-loader",
             "style-loader",
-            "css-loader",
+            "fast-css-loader",
             "sass-loader",
             {
               loader: "style-resources-loader",

@@ -77,6 +77,10 @@ const onChangeDate = (value) => {
   width: 100%;
   .component-item {
     width: 300px;
+    margin-left: 20px;
+    &:not(:first-child) {
+      margin-top: 20px;
+    }
   }
 }
 </style>

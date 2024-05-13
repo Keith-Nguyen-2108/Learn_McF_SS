@@ -6,6 +6,8 @@
     "start:all": "pnpm --parallel --filter \"./packages/*\" start",
     "start:common": "nx start @learnss/common",
     "build:common": "nx build @learnss/common",
+    "start:common-react": "nx start @learnss/common-react",
+    "build:common-react": "nx build @learnss/common-react",
     "start:root-config": "nx start @learnss/root-config",
     "build:root-config": "nx build @learnss/root-config",
     "start:utils": "nx start @learnss/utils",
