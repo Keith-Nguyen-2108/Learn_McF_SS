@@ -320,24 +320,35 @@ const data = computed<any[]>(() => selectStore.data as any[]);
 const queryString = computed(() => selectStore.queryString);
 const filterString = computed(() => selectStore.filterString);
 
-const getLowerCaseValue = (value) => {
-  if (value && typeof value == "string") return value.toLowerCase();
+const formatValue = (itemValue) => {
+  if (typeof itemValue === "number") {
+    return itemValue;
+  } else if (typeof itemValue === "string") {
+    return itemValue.toLowerCase();
+  }
+  return itemValue;
+};
 
-  if (Array.isArray(value) && value?.length) {
-    if (typeof value[0] == "string")
-      return value.map((itemVal: string) => itemVal.toLowerCase());
-    else if (typeof value[0] == "number") return value;
-    else
-      return value.map(
-        (itemVal: Record<string, any>) =>
-          (itemVal = {
-            ...itemVal,
-            [props.source]:
-              typeof itemVal[props.source] == "number"
-                ? itemVal[props.source]
-                : ("" + itemVal[props.source])?.toLowerCase(),
-          })
-      );
+const getLowerCaseValue = (value) => {
+  if (typeof value === "string") {
+    return value.toLowerCase();
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (typeof item === "string") {
+        return item.toLowerCase();
+      } else if (typeof item === "number") {
+        return item;
+      } else if (typeof item === "object" && item !== null) {
+        return {
+          ...item,
+          [props.source]: formatValue(item[props.source]),
+        };
+      } else {
+        return item;
+      }
+    });
   }
 
   return value;
@@ -384,15 +395,30 @@ const inputValue = ref<any>(getLowerCaseValue(props.value));
  * ATTENTION: your All option object must have at least 2 key are [props.source] and [props.sourceLabel]
  */
 const optionAll = computed(() => {
-  if (typeof props.optionFirstAll != "object") return undefined;
+  if (!props.optionFirstAll || typeof props.optionFirstAll !== "object") {
+    return undefined;
+  }
 
-  if (Object.keys(props.optionFirstAll)?.length < 2) {
+  const requiredKeys = [props.source];
+  if (typeof props.sourceLabel === "string") {
+    requiredKeys.push(props.sourceLabel);
+  }
+
+  const hasRequiredKeys = requiredKeys.every(
+    (key) => key in props.optionFirstAll
+  );
+
+  if (!hasRequiredKeys) {
     console.error(
-      "Your All option object must have at least 2 key are [props.source] and [props.sourceLabel]",
-      props.label
+      `The 'All' option object must have at least these keys: ${requiredKeys.join(
+        ", "
+      )}`,
+      `Component Label: ${props.label}`
     );
     return undefined;
-  } else return props.optionFirstAll;
+  }
+
+  return props.optionFirstAll;
 });
 
 /**
@@ -439,20 +465,13 @@ const generateLabel = (option) => {
 };
 
 const validateMultipleValue = () => {
-  if (!options.value) return;
-  const map = new Map(options.value.map((obj) => [obj[props.source], obj]));
+  if (!options.value || !props.value) return true;
 
-  let temp = true;
+  const optionMap = new Map(
+    options.value.map((obj) => [obj[props.source], obj])
+  );
 
-  if (props.value) {
-    for (let value of props.value as any[]) {
-      if (!map.has(value)) {
-        temp = false;
-        return;
-      }
-    }
-  }
-  return temp;
+  return (props.value as any[]).every((value) => optionMap.has(value));
 };
 
 const isValidValue = computed(() => {
@@ -477,27 +496,19 @@ const isValidValue = computed(() => {
 const getOriginalValue = (value: any) => {
   if (!options.value?.length) return value;
 
+  const findOption = (itemVal: any) =>
+    options.value.find(
+      (option: any) => getLowerCaseValue(option[props.source]) === itemVal
+    );
+
   if (Array.isArray(value)) {
-    let matches = value.map((itemVal: any) => {
-      return options.value.find(
-        (option: any) => getLowerCaseValue(option[props.source]) == itemVal
-      );
+    return value.map((itemVal) => {
+      const match = findOption(itemVal);
+      return match ? match[props.source] : itemVal;
     });
-
-    matches = matches.map(
-      (matchItem: Record<string, any>) => matchItem[props.source]
-    );
-
-    return matches;
   } else {
-    const tempValue = options.value.find(
-      (option: Record<string, any>) =>
-        getLowerCaseValue(option[props.source]) == value
-    );
-
-    return tempValue && Object.keys(tempValue).length
-      ? tempValue[props.source]
-      : value;
+    const match = findOption(value);
+    return match ? match[props.source] : value;
   }
 };
 
@@ -556,16 +567,18 @@ watch(
 // <================== FILTERS & QUERIES ===================>
 
 const handleUrl = () => {
-  const hasQueryOrFilter = queryString.value || filterString.value;
+  const queryParams = [];
 
-  let url = `${props.endpoint}${hasQueryOrFilter ? "?" : ""}`;
+  if (queryString.value) {
+    queryParams.push(queryString.value);
+  }
 
-  if (queryString.value) url += `${queryString.value}`;
+  if (filterString.value) {
+    queryParams.push(filterString.value);
+  }
 
-  if (filterString.value)
-    url += `${queryString.value ? "&" : ""}${filterString.value}`;
-
-  return url;
+  const queryPart = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
+  return `${props.endpoint}${queryPart}`;
 };
 
 const apiUrl = computed(() => handleUrl() || props.endpoint);
@@ -696,21 +709,17 @@ const setEndPointParams = (newVal: string | number = undefined) => {
 // <================== EVENTS ===================>
 
 const getAllInValue = (value: any) => {
+  const findOption = (itemVal: any) =>
+    options.value.find(
+      (option: any) =>
+        getLowerCaseValue(option[props.source]) === getLowerCaseValue(itemVal)
+    );
+
   if (isModeMultiple.value) {
-    const fullValMultiple = value.map((item) => {
-      const matchedItem = options.value.find(
-        (option) =>
-          getLowerCaseValue(option[props.source]) == getLowerCaseValue(item)
-      );
-      return toRaw(matchedItem);
-    });
-    return fullValMultiple;
+    return value.map((itemVal: any) => toRaw(findOption(itemVal)));
   }
 
-  const fullValue = options.value.find(
-    (item) => getLowerCaseValue(item[props.source]) == getLowerCaseValue(value)
-  );
-  return fullValue;
+  return findOption(value);
 };
 
 /** @function onChange
@@ -848,14 +857,14 @@ onBeforeMount(async () => {
 
 .ant-select {
   width: 100%;
-}
-
-::v-deep() {
   .empty-image {
     width: 100%;
     height: 60px;
     object-fit: contain;
   }
+}
+
+::v-deep() {
   .ant-form-item-required {
     display: flex;
     align-items: center;

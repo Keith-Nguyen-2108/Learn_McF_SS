@@ -13,6 +13,21 @@
     </div>
 
     <div class="component-item">
+      <SelectInput
+        label="Select Input Endpoint"
+        default-active-first-option
+        :loading="loading"
+        source="id"
+        source-label="name"
+        endpoint="https://jsonplaceholder.typicode.com/users"
+        show-search
+        search-key="name"
+        search-type="query"
+        @change="onUserChange"
+      />
+    </div>
+
+    <div class="component-item">
       <DaterangeFilter label="Daterange Filter" @change="onChangeDateRange" />
     </div>
 

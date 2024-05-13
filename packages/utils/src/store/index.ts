@@ -18,6 +18,25 @@ export const generateCrudStore = (
   const queryObj = ref<Record<string, any>>();
   const filterObj = ref<Record<string, any>>();
 
+  const buildUrlWithQueries = (
+    endpoint: string,
+    pagination,
+    getSortersString,
+    queryString,
+    filterString
+  ) => {
+    let url = endpoint;
+    let queries = [pagination, getSortersString, queryString]
+      .filter(Boolean)
+      .join("&");
+    let filters = filterString;
+
+    if (filters) queries += `&${filters}`;
+    if (queries) url += `?${queries.replace("?&", "?")}`;
+
+    return url;
+  };
+
   return defineStore({
     id: storeName,
     state: () => {
@@ -33,98 +52,95 @@ export const generateCrudStore = (
     getters: {
       getPagination: (state) => state.pagination,
 
-      getPaginationString: (state) => {
-        return setQueryString(state.pagination);
-      },
+      getPaginationString: (state) => setQueryString(state.pagination),
 
       getSortersString: (state) => {
         const { order, columnKey } = state.sorter;
-        if (columnKey && order) {
-          return `sort=${order == "ascend" ? "" : "-"}${columnKey}`;
-        } else return "";
+        return columnKey && order
+          ? `sort=${order === "ascend" ? "" : "-"}${columnKey}`
+          : "";
       },
     },
     actions: {
-      async fetchList(
-        customUrl = ""
-        // customType?: customQueryType,
-        // customObj?: Record<string, any>
-      ) {
+      async fetchList(customUrl = "") {
         this.loading = true;
-        let url = customUrl ? customUrl : apiUrl;
-
-        if (!customUrl) {
-          let queries = "";
-          let filters = "";
-
-          let pagination = this.getPaginationString;
-          let sorter = this.getSortersString;
-
-          if (pagination || sorter) {
-            queries += pagination + (sorter ? `&${sorter}` : "");
-          }
-
-          // if (onlyCustomQuery && !onlyCustomFilter) {
-          //   if (Object.keys(customQuery).length > 0)
-          //     queries = setQueryString(customQuery);
-          // } else if (appendQuery)
-          queries += this.queryString ? `&${this.queryString}` : "";
-
-          // if (!onlyCustomQuery && onlyCustomFilter) {
-          //   if (Object.keys(customQuery).length > 0)
-          //     filters = setFilterString(customQuery);
-          // } else if (appendQuery)
-          filters = this.filterString;
-
-          if (filters) queries += `&${filters}`;
-
-          if (queries) url += "?" + queries;
-
-          url = url.replace("?&", "?");
+        try {
+          const url = !customUrl
+            ? buildUrlWithQueries(
+                apiUrl,
+                this.getPaginationString,
+                this.getSortersString,
+                this.queryString,
+                this.filterString
+              )
+            : customUrl;
+          this.data = await get(url);
+        } catch (error) {
+          showNotification("error", "Failed to fetch data");
+        } finally {
+          this.loading = false;
         }
-
-        this.data = await get(url);
-        this.loading = false;
       },
 
       async createNewData(customUrl = "", payload = {}) {
         this.loading = true;
-        let url: string = customUrl ? customUrl : apiUrl;
-        const newData = await post(url, payload);
-        if (newData) {
-          showNotification("success", "Create successfully");
+        const url: string = customUrl || apiUrl;
+        try {
+          const newData = await post(url, payload);
+          if (newData) {
+            showNotification("success", "Create successfully");
+          }
+        } catch (error) {
+          showNotification("error", "Failed to create data");
+        } finally {
+          this.loading = false;
         }
-        this.loading = false;
       },
 
       async putUpdate(customUrl = "", payload = {}) {
         this.loading = true;
-        let url: string = customUrl ? customUrl : apiUrl;
-        const newData = await put(url, payload);
-        if (newData) {
-          showNotification("success", "Update successfully");
+        const url: string = customUrl || apiUrl;
+        try {
+          const newData = await put(url, payload);
+          if (newData) {
+            showNotification("success", "Update successfully");
+          }
+        } catch (error) {
+          showNotification("error", "Failed to update data");
+        } finally {
+          this.loading = false;
         }
-        this.loading = false;
       },
 
       async patchUpdate(customUrl = "", payload = {}) {
         this.loading = true;
-        let url: string = customUrl ? customUrl : apiUrl;
-        const newData = await patch(url, payload);
-        if (newData) {
-          showNotification("success", "Update successfully");
+        const url: string = customUrl || apiUrl;
+        try {
+          const newData = await patch(url, payload);
+          if (newData) {
+            showNotification("success", "Update successfully");
+          }
+        } catch (error) {
+          showNotification("error", "Failed to update data");
+        } finally {
+          this.loading = false;
         }
-        this.loading = false;
       },
 
       async deleteData(customUrl = "", payload = {}) {
         this.loading = true;
-        let url: string = customUrl ? customUrl : apiUrl;
-        const data = await del(url, payload);
-        if (data) {
-          showNotification("success", "Delete successfully");
+
+        const url: string = customUrl || apiUrl;
+        try {
+          const newData = await del(url, payload);
+          if (newData) {
+            showNotification("success", "Delete successfully");
+          }
+        } catch (error) {
+          showNotification("error", "Failed to delete data");
+        } finally {
+          this.loading = false;
         }
-        this.loading = false;
       },
 
       setQuery(key: string, value: number | number[] | string | string[]) {

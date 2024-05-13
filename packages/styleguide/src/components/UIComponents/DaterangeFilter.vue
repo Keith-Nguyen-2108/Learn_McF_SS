@@ -4,7 +4,7 @@
     <a-range-picker
       v-click-away="onCancel"
       :allow-clear="allowClear"
-      :get-calendar-container="(trigger) => trigger.parentNode"
+      :get-calendar-container="getCalendarContainer"
       :open="isPickerOpen"
       :format="formatDate"
       :value="currentPeriod"
@@ -14,51 +14,39 @@
       <template #suffixIcon>
         <calendar-outlined />
       </template>
-
       <template #renderExtraFooter>
         <div class="date-range-filter__preset-list">
           <div
             v-for="opt in options"
             :key="opt.name"
-            :class="[
-              'date-range-filter__preset-option',
-              'gray-9--text',
-              opt.name === selectedOption ? 'h7 primary-1--bg' : 'b7',
-              opt.label == DateOption.QuarterToDate ? 'p-0' : 'active',
-            ]"
+            :class="getOptionClass(opt)"
             @click="onOptionClick(opt)"
           >
-            <template v-if="opt.label == DateOption.QuarterToDate">
-              <a-menu
-                v-model:selectedKeys="state.selectedKeys"
-                mode="inline"
-                :open-keys="state.openKeys"
-                :items="[opt]"
-                @openChange="onOpenChange"
-                @click="onOptionClick"
-              ></a-menu>
-            </template>
-            <template v-else>
-              <div>
-                {{ opt.name }}
-              </div></template
-            >
+            <div v-if="opt.label !== DateOption.QuarterToDate">
+              {{ opt.name }}
+            </div>
+            <a-menu
+              v-else
+              v-model:selectedKeys="state.selectedKeys"
+              mode="inline"
+              :open-keys="state.openKeys"
+              :items="[opt]"
+              @openChange="onOpenChange"
+              @click="onOptionClick"
+            ></a-menu>
           </div>
         </div>
-
         <a-row type="flex" justify="end">
           <a-col>
             <a-space>
-              <a-button size="small" @click="onCancel"> Cancel </a-button>
-
+              <a-button size="small" @click="onCancel">Cancel</a-button>
               <a-button
                 size="small"
                 type="primary"
                 class="me-2"
                 @click="onApply"
+                >Apply</a-button
               >
-                Apply
-              </a-button>
             </a-space>
           </a-col>
         </a-row>
@@ -68,12 +56,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, getCurrentInstance } from "vue";
+import { onMounted, reactive, ref, computed } from "vue";
 import _ from "lodash";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import VueClickAway from "vue3-click-away";
-
 import { FORMAT_DATE_STR } from "@learnss/utils";
 import { useCustomDateRangePicker } from "@/modules";
 import { DateOption, QUARTER_OPTIONS, QuarterOrder } from "@/constants";
@@ -88,30 +75,14 @@ type CustomDateOption = {
 };
 
 const app = getCurrentInstance();
-
 app.appContext.app.use(VueClickAway);
 
 const props = defineProps({
-  allowClear: {
-    type: Boolean,
-    default: true,
-  },
-  allowOptionCustom: {
-    type: Boolean,
-    default: false,
-  },
-  disabledDate: {
-    type: Function,
-    default: () => false,
-  },
-  formatDate: {
-    type: String,
-    default: FORMAT_DATE_STR.date,
-  },
-  label: {
-    type: String,
-    default: "",
-  },
+  allowClear: Boolean,
+  allowOptionCustom: Boolean,
+  disabledDate: Function,
+  formatDate: String,
+  label: String,
 });
 
 const emit = defineEmits(["change"]);
@@ -122,33 +93,31 @@ const state = reactive({
   selectedKeys: [],
 });
 
-const onOpenChange = (openKeys: string[]) => {
-  const latestOpenKey = openKeys.find(
-    (key) => state.openKeys.indexOf(key) === -1
-  );
-  if (state.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
-    state.openKeys = openKeys;
-  } else {
-    state.openKeys = latestOpenKey ? [latestOpenKey] : [];
-  }
-};
-
-const currentPeriod = ref<dayjs.Dayjs[]>([dayjs().startOf("month"), dayjs()]);
-
-const { getDateOptions } = useCustomDateRangePicker();
-
+const currentPeriod = ref<Dayjs[]>([dayjs().startOf("month"), dayjs()]);
 const options = ref<CustomDateOption[]>(
-  getDateOptions(undefined, props.allowOptionCustom)
+  useCustomDateRangePicker().getDateOptions(undefined, props.allowOptionCustom)
 );
-
 const selectedOption = ref<DateOption>(DateOption.MonthToDate);
 const tempOption = ref(selectedOption.value);
 const tempPeriod = ref(currentPeriod.value);
+const isPickerOpen = ref(false);
 
-const onChange = (val: dayjs.Dayjs[], event?: any) => {
+const getCalendarContainer = (trigger) => trigger.parentNode;
+const getOptionClass = (opt) => [
+  "date-range-filter__preset-option",
+  "gray-9--text",
+  opt.name === selectedOption.value ? "h7 primary-1--bg" : "b7",
+  opt.label === DateOption.QuarterToDate ? "p-0" : "active",
+];
+
+const onOpenChange = (openKeys: string[]) => {
+  const latestOpenKey = openKeys.find((key) => !state.openKeys.includes(key));
+  state.openKeys = latestOpenKey ? [latestOpenKey] : [];
+};
+
+const onChange = (val: Dayjs[], event?: any) => {
   currentPeriod.value = val;
   selectedOption.value = DateOption.Custom;
-  console.log("onChange", val, event);
 };
 
 const onOptionClick = (option: CustomDateOption) => {
@@ -164,16 +133,14 @@ const onOptionClick = (option: CustomDateOption) => {
   if (isQuarterOption) {
     const { item } = option;
     const { originItemValue } = item;
-    currentPeriod.value = originItemValue.value as dayjs.Dayjs[];
+    currentPeriod.value = originItemValue.value as Dayjs[];
     selectedOption.value = originItemValue.key as any;
   } else {
-    currentPeriod.value = option.value as dayjs.Dayjs[];
+    currentPeriod.value = option.value as Dayjs[];
     selectedOption.value = option.name as any;
     state.selectedKeys = state.openKeys = [];
   }
 };
-
-const isPickerOpen = ref(false);
 
 const onFilterClick = (event?: any) => {
   if (event?.target?.innerText === "Apply") return;
@@ -189,8 +156,6 @@ const handleCancel = () => {
 };
 
 const onCancel = (event: any) => {
-  console.log("onCancel", event);
-
   const isCustomOption =
     Object.values(DateOption).includes(event?.target?.innerText) ||
     Object.values(QuarterOrder).includes(event?.target?.innerText);

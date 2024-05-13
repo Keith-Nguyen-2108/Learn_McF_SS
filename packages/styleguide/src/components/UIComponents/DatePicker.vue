@@ -4,44 +4,40 @@
     :class="disabled ? 'disabled' : ''"
     @change="onChange"
   >
-    <template v-if="formItem">
-      <a-form :layout="layout">
-        <a-form-item
-          :class="className"
-          :help="$props.help"
-          :label="label"
-          :label-align="labelAlign"
-          :label-col="labelCol"
-          :required="required"
-          :validate-status="validateStatus"
-        >
-          <a-date-picker
-            v-model:value="inputValue"
-            :allow-clear="allowClear"
-            :disabled="disabled"
-            :disabled-date="disabledDate"
-            :disabled-time="disabledTime"
-            :dropdown-class-name="dropdownClassName"
-            :placeholder="placeholder"
-            :placement="placement"
-            :format="format"
-            :show-time="showTime"
-            :mode="mode"
-            :open="open"
-            :value-format="valueFormat"
-            :get-calendar-container="(trigger) => trigger.parentNode"
-            @change="onDateChange"
-            @openChange="onOpenChange"
-            @panelChange="onPanelChange"
-            @ok="onOk"
-          />
-        </a-form-item>
-      </a-form>
-    </template>
-
+    <a-form v-if="formItem" :layout="layout">
+      <a-form-item
+        :class="className"
+        :help="$props.help"
+        :label="label"
+        :label-align="labelAlign"
+        :label-col="labelCol"
+        :required="required"
+        :validate-status="validateStatus"
+      >
+        <a-date-picker
+          v-model:value="inputValue"
+          :allow-clear="allowClear"
+          :disabled="disabled"
+          :disabled-date="disabledDate"
+          :disabled-time="disabledTime"
+          :dropdown-class-name="dropdownClassName"
+          :placeholder="placeholder"
+          :placement="placement"
+          :format="format"
+          :show-time="showTime"
+          :mode="mode"
+          :open="open"
+          :value-format="valueFormat"
+          :get-calendar-container="getCalendarContainer"
+          @change="onDateChange"
+          @openChange="onOpenChange"
+          @panelChange="onPanelChange"
+          @ok="onOk"
+        />
+      </a-form-item>
+    </a-form>
     <template v-else>
       <label v-if="label">{{ label }}</label>
-
       <a-date-picker
         v-model:value="inputValue"
         :allow-clear="allowClear"
@@ -56,7 +52,7 @@
         :mode="mode"
         :open="open"
         :value-format="valueFormat"
-        :get-calendar-container="(trigger) => trigger.parentNode"
+        :get-calendar-container="getCalendarContainer"
         @change="onDateChange"
         @openChange="onOpenChange"
         @panelChange="onPanelChange"
@@ -69,7 +65,6 @@
 <script setup lang="ts">
 import { PropType, computed, ref, watch } from "vue";
 import dayjs from "dayjs";
-
 import {
   getDatetimeAbbr,
   FORMAT_DATE_STR,
@@ -178,6 +173,8 @@ const emit = defineEmits(["change", "ok"]);
 const textFormatAbbr = ref<string>("");
 const mode = ref(props.yearOnly ? "year" : "date");
 const open = ref(false);
+
+const getCalendarContainer = (trigger) => trigger.parentNode;
 
 const convertValue = (value) => {
   if (!value) {

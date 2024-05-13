@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosRequestConfig, Method } from "axios";
 import {
   showErrorNotification,
   generateQueryString,
@@ -6,66 +6,39 @@ import {
 } from "@/mixins";
 
 const useActionCRUD = () => {
-  const get = async (url: string) => {
+  const makeRequest = async (
+    method: Method,
+    url: string,
+    payload?: Record<string, any>
+  ) => {
     try {
-      const res = await axios.get(url);
-      if (res && res.data) return res.data.results ?? res.data;
-    } catch (err) {
-      showErrorNotification(err as AxiosError);
+      const config: AxiosRequestConfig = {
+        method: method,
+        url: url,
+        ...(payload && { data: payload }),
+      };
+      const response = await axios(config);
+      return response.data.results ?? response.data;
+    } catch (error) {
+      showErrorNotification(error as AxiosError);
     }
   };
 
-  const post = async (url: string, payload: Record<string, any>) => {
-    try {
-      const res = await axios.post(url, payload);
-      if (res && res.data) {
-        return res.data.results ?? res.data;
-      }
-    } catch (err) {
-      showErrorNotification(err as AxiosError);
-    }
-  };
+  const get = (url: string) => makeRequest("get", url);
+  const post = (url: string, payload: Record<string, any>) =>
+    makeRequest("post", url, payload);
+  const put = (url: string, payload: Record<string, any>) =>
+    makeRequest("put", url, payload);
+  const patch = (url: string, payload: Record<string, any>) =>
+    makeRequest("patch", url, payload);
+  const del = (url: string, payload: Record<string, any>) =>
+    makeRequest("delete", url, payload);
 
-  const put = async (url: string, payload: Record<string, any>) => {
-    try {
-      const res = await axios.put(url, payload);
-      if (res && res.data) {
-        return res.data.results ?? res.data;
-      }
-    } catch (err) {
-      showErrorNotification(err as AxiosError);
-    }
-  };
+  const setQueryString = (queryParameters: Record<string, any>) =>
+    generateQueryString(queryParameters);
 
-  const patch = async (url: string, payload: Record<string, any>) => {
-    try {
-      const res = await axios.patch(url, payload);
-      if (res && res.data) {
-        return res.data.results ?? res.data;
-      }
-    } catch (err) {
-      showErrorNotification(err as AxiosError);
-    }
-  };
-
-  const del = async (url: string, payload: Record<string, any>) => {
-    try {
-      const res = await axios.delete(url, payload);
-      if (res && res.data) {
-        return res.data.results ?? res.data;
-      }
-    } catch (err) {
-      showErrorNotification(err as AxiosError);
-    }
-  };
-
-  const setQueryString = (queryParameters: Record<string, any>) => {
-    return generateQueryString(queryParameters);
-  };
-
-  const setFilterString = (filterParameters: Record<string, any>) => {
-    return generateFilterString(filterParameters);
-  };
+  const setFilterString = (filterParameters: Record<string, any>) =>
+    generateFilterString(filterParameters);
 
   return {
     post,
