@@ -5,7 +5,7 @@ import {
   generateFilterString,
 } from "@/mixins";
 
-const useActionCRUD = () => {
+export const useActionCRUD = () => {
   const makeRequest = async (
     method: Method,
     url: string,
@@ -50,5 +50,3 @@ const useActionCRUD = () => {
     setFilterString,
   };
 };
-
-export default useActionCRUD;

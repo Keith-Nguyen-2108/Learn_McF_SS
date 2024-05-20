@@ -3,13 +3,13 @@ import { ItemType } from "ant-design-vue";
 import dayjs, { OpUnitType, ManipulateType } from "dayjs";
 import quarterOfYear from "dayjs/plugin/quarterOfYear";
 
-import { ItemDate } from "@learnss/utils";
+import { T_ItemDate } from "@learnss/utils";
 
 import {
-  DATE_OPTIONS,
-  DateOption,
-  QUARTER_OPTIONS,
-  QuarterOrder,
+  C_DATE_OPTIONS,
+  E_DateOption,
+  C_QUARTER_OPTIONS,
+  E_QuarterOrder,
 } from "@/constants";
 
 dayjs.extend(quarterOfYear);
@@ -33,73 +33,75 @@ export const useCustomDateRangePicker = () => {
     } as ItemType;
   };
 
-  const getOptionValue = (option: DateOption | QuarterOrder): ItemDate[] => {
+  const getOptionValue = (
+    option: E_DateOption | E_QuarterOrder
+  ): T_ItemDate[] => {
     const startOf = (unit: OpUnitType) => dayjs().startOf(unit);
     const endOf = (unit: OpUnitType) => dayjs().endOf(unit);
     const subtract = (amount: number, unit: ManipulateType) =>
       dayjs().subtract(amount, unit);
 
     switch (option) {
-      case DateOption.ThisMonth:
+      case E_DateOption.ThisMonth:
         return [startOf("month"), endOf("month")];
-      case DateOption.ThisWeek:
+      case E_DateOption.ThisWeek:
         return [startOf("week"), endOf("week")];
-      case DateOption.Today:
+      case E_DateOption.Today:
         return [dayjs(), dayjs()];
-      case DateOption.Yesterday:
+      case E_DateOption.Yesterday:
         return [subtract(1, "days"), subtract(1, "days")];
-      case DateOption.LastWeek:
+      case E_DateOption.LastWeek:
         return [
           subtract(1, "weeks").startOf("week"),
           subtract(1, "weeks").endOf("week"),
         ];
-      case DateOption.Last7Days:
+      case E_DateOption.Last7Days:
         return [subtract(7, "days"), dayjs()];
-      case DateOption.Last30Days:
+      case E_DateOption.Last30Days:
         return [subtract(30, "days"), dayjs()];
-      case DateOption.Last90Days:
+      case E_DateOption.Last90Days:
         return [subtract(90, "days"), dayjs()];
-      case DateOption.LastMonth:
+      case E_DateOption.LastMonth:
         return [
           subtract(1, "months").startOf("month"),
           subtract(1, "months").endOf("month"),
         ];
-      case DateOption.Last3Months:
+      case E_DateOption.Last3Months:
         return [
           subtract(3, "months").startOf("month"),
           subtract(1, "months").endOf("month"),
         ];
-      case DateOption.LastYear:
+      case E_DateOption.LastYear:
         return [
           subtract(1, "years").startOf("year"),
           subtract(1, "years").endOf("year"),
         ];
-      case DateOption.WeekToDate:
+      case E_DateOption.WeekToDate:
         return [startOf("week"), dayjs()];
-      case DateOption.MonthToDate:
+      case E_DateOption.MonthToDate:
         return [startOf("month"), dayjs()];
-      case QuarterOrder.FirstQuarter:
+      case E_QuarterOrder.FirstQuarter:
         return [dayjs().quarter(1).startOf("quarter"), dayjs()];
-      case QuarterOrder.SecondQuarter:
+      case E_QuarterOrder.SecondQuarter:
         return [dayjs().quarter(2).startOf("quarter"), dayjs()];
-      case QuarterOrder.ThirdQuarter:
+      case E_QuarterOrder.ThirdQuarter:
         return [dayjs().quarter(3).startOf("quarter"), dayjs()];
-      case QuarterOrder.LastQuarter:
+      case E_QuarterOrder.LastQuarter:
         return [dayjs().quarter(4).startOf("quarter"), dayjs()];
-      case DateOption.YearToDate:
+      case E_DateOption.YearToDate:
         return [startOf("year"), dayjs()];
     }
   };
 
   const getDateOptions = (newOptions?: any, allowCustom = false) => {
-    const options = (newOptions || DATE_OPTIONS).map((option) => {
+    const options = (newOptions || C_DATE_OPTIONS).map((option) => {
       const optionValue = getOptionValue(option.name) as [
         dayjs.Dayjs,
         dayjs.Dayjs
       ];
 
-      if (option.name === DateOption.QuarterToDate) {
-        const quarterItems = QUARTER_OPTIONS.map((quarterOption) => {
+      if (option.name === E_DateOption.QuarterToDate) {
+        const quarterItems = C_QUARTER_OPTIONS.map((quarterOption) => {
           const quarterValue = getOptionValue(quarterOption.name) as [
             dayjs.Dayjs,
             dayjs.Dayjs
@@ -115,8 +117,8 @@ export const useCustomDateRangePicker = () => {
         });
 
         return getItem(
-          DateOption.QuarterToDate,
-          DateOption.QuarterToDate,
+          E_DateOption.QuarterToDate,
+          E_DateOption.QuarterToDate,
           undefined,
           quarterItems
         );
@@ -130,7 +132,7 @@ export const useCustomDateRangePicker = () => {
 
     return allowCustom
       ? options
-      : options.filter((option) => option.name !== DateOption.Custom);
+      : options.filter((option) => option.name !== E_DateOption.Custom);
   };
 
   return {

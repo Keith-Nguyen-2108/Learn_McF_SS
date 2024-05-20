@@ -1,6 +1,6 @@
-import { FormatDateStr } from "@/types";
+import { T_FormatDateStr } from "@/types";
 
-export const FORMAT_DATE_STR: FormatDateStr = {
+export const C_FORMAT_DATE_STR: T_FormatDateStr = {
   fullDateTime12h: "dddd, DD/MM/YYYY, hh:mm A",
   date: "DD/MM/YYYY",
   datetime: "DD/MM/YYYY hh:mm A",

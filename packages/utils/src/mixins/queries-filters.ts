@@ -1,4 +1,4 @@
-import { FilterParams } from "@/types";
+import { T_FilterParams } from "@/types";
 
 type Entry<T> = { [K in keyof T]: [K, T[K]] }[keyof T];
 
@@ -21,7 +21,7 @@ export const generateFilterString = (
 
   const andClauses = Object.entries(parameters).map(
     ([key, val]: Entry<Record<string, any>>) => {
-      const { operator, value } = val as FilterParams;
+      const { operator, value } = val as T_FilterParams;
       if (key.includes(",")) {
         const orClauses = key
           .split(",")

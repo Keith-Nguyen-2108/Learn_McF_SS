@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-export type FormatDateStr = {
+export type T_FormatDateStr = {
   fullDateTime12h: "dddd, DD/MM/YYYY, hh:mm A";
   date: "DD/MM/YYYY";
   dateAbbr: "DD/MM/YYYY z";
@@ -19,4 +19,4 @@ export type FormatDateStr = {
   ymdDash: "YYYY-MM-DD";
 };
 
-export type ItemDate = dayjs.Dayjs | Date | string | undefined;
+export type T_ItemDate = dayjs.Dayjs | Date | string | undefined;

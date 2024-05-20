@@ -22,7 +22,7 @@
             :class="getOptionClass(opt)"
             @click="onOptionClick(opt)"
           >
-            <div v-if="opt.label !== DateOption.QuarterToDate">
+            <div v-if="opt.label !== E_DateOption.QuarterToDate">
               {{ opt.name }}
             </div>
             <a-menu
@@ -56,17 +56,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref, computed } from "vue";
+import { onMounted, reactive, ref, getCurrentInstance } from "vue";
 import _ from "lodash";
 import dayjs from "dayjs";
 import type { Dayjs } from "dayjs";
 import VueClickAway from "vue3-click-away";
-import { FORMAT_DATE_STR } from "@learnss/utils";
 import { useCustomDateRangePicker } from "@/modules";
-import { DateOption, QUARTER_OPTIONS, QuarterOrder } from "@/constants";
+import { E_DateOption, C_QUARTER_OPTIONS, E_QuarterOrder } from "@/constants";
 
 type CustomDateOption = {
-  name: DateOption | QuarterOrder;
+  name: E_DateOption | E_QuarterOrder;
   value: [string, string] | [Dayjs, Dayjs];
   label?: string;
   key?: string;
@@ -97,7 +96,7 @@ const currentPeriod = ref<Dayjs[]>([dayjs().startOf("month"), dayjs()]);
 const options = ref<CustomDateOption[]>(
   useCustomDateRangePicker().getDateOptions(undefined, props.allowOptionCustom)
 );
-const selectedOption = ref<DateOption>(DateOption.MonthToDate);
+const selectedOption = ref<E_DateOption>(E_DateOption.MonthToDate);
 const tempOption = ref(selectedOption.value);
 const tempPeriod = ref(currentPeriod.value);
 const isPickerOpen = ref(false);
@@ -107,7 +106,7 @@ const getOptionClass = (opt) => [
   "date-range-filter__preset-option",
   "gray-9--text",
   opt.name === selectedOption.value ? "h7 primary-1--bg" : "b7",
-  opt.label === DateOption.QuarterToDate ? "p-0" : "active",
+  opt.label === E_DateOption.QuarterToDate ? "p-0" : "active",
 ];
 
 const onOpenChange = (openKeys: string[]) => {
@@ -117,18 +116,20 @@ const onOpenChange = (openKeys: string[]) => {
 
 const onChange = (val: Dayjs[], event?: any) => {
   currentPeriod.value = val;
-  selectedOption.value = DateOption.Custom;
+  selectedOption.value = E_DateOption.Custom;
 };
 
 const onOptionClick = (option: CustomDateOption) => {
   if (
-    option.name == DateOption.Custom ||
-    option.name == DateOption.QuarterToDate ||
-    option.key == DateOption.QuarterToDate
+    option.name == E_DateOption.Custom ||
+    option.name == E_DateOption.QuarterToDate ||
+    option.key == E_DateOption.QuarterToDate
   )
     return;
 
-  const isQuarterOption = QUARTER_OPTIONS.find((opt) => opt.name == option.key);
+  const isQuarterOption = C_QUARTER_OPTIONS.find(
+    (opt) => opt.name == option.key
+  );
 
   if (isQuarterOption) {
     const { item } = option;
@@ -157,8 +158,8 @@ const handleCancel = () => {
 
 const onCancel = (event: any) => {
   const isCustomOption =
-    Object.values(DateOption).includes(event?.target?.innerText) ||
-    Object.values(QuarterOrder).includes(event?.target?.innerText);
+    Object.values(E_DateOption).includes(event?.target?.innerText) ||
+    Object.values(E_QuarterOrder).includes(event?.target?.innerText);
 
   const isCalenderItem = event?.target?.className?.includes("ant-calendar");
 

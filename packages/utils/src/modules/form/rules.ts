@@ -1,7 +1,7 @@
 import { defineRule } from "vee-validate";
 import AllRules from "@vee-validate/rules";
 
-import { EMAIL_PATTERN } from "@/constants";
+import { C_EMAIL_PATTERN } from "@/constants";
 
 Object.keys(AllRules).forEach((rule) => {
   defineRule(
@@ -37,10 +37,10 @@ defineRule("email", (value: any) => {
   if (!value) return true;
 
   if (Array.isArray(value)) {
-    return value.every((val) => EMAIL_PATTERN.test(String(val)));
+    return value.every((val) => C_EMAIL_PATTERN.test(String(val)));
   }
 
-  return EMAIL_PATTERN.test(String(value));
+  return C_EMAIL_PATTERN.test(String(value));
 });
 
 defineRule("phone_number", (value: any, params: any, ctx: any) => {

@@ -67,7 +67,7 @@ import { PropType, computed, ref, watch } from "vue";
 import dayjs from "dayjs";
 import {
   getDatetimeAbbr,
-  FORMAT_DATE_STR,
+  C_FORMAT_DATE_STR,
   parseDateTime,
 } from "@learnss/utils";
 
@@ -100,7 +100,7 @@ const props = defineProps({
   },
   formatDate: {
     type: String,
-    default: FORMAT_DATE_STR.date,
+    default: C_FORMAT_DATE_STR.date,
   },
   formItem: {
     type: Boolean,
@@ -210,8 +210,8 @@ const getValueFormat = () => {
   if (props.yearOnly) return "YYYY";
 
   return props.showTime
-    ? FORMAT_DATE_STR.dateDashedReverseTime24h
-    : FORMAT_DATE_STR.ymdDash;
+    ? C_FORMAT_DATE_STR.dateDashedReverseTime24h
+    : C_FORMAT_DATE_STR.ymdDash;
 };
 
 const onDateChange = (value) => {

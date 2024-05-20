@@ -1,6 +1,6 @@
 import { notification } from "ant-design-vue";
 
-type NotificationType = "success" | "info" | "warning" | "error";
+type T_Notification = "success" | "info" | "warning" | "error";
 
 type messageType = {
   message: string;
@@ -8,7 +8,7 @@ type messageType = {
 };
 
 export const showNotification = (
-  type: NotificationType = "error",
+  type: T_Notification = "error",
   inforMessage: string | messageType
 ) => {
   if (typeof inforMessage == "string") {

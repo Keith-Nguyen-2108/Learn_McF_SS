@@ -133,7 +133,7 @@
 <script setup lang="ts">
 import { PropType, computed, onBeforeMount, ref, toRaw, watch } from "vue";
 
-import { FilterOperators, AdvancedFilterValue } from "@learnss/utils";
+import { E_FilterOperators, T_AdvancedFilterValue } from "@learnss/utils";
 import { useStore } from "@/store";
 import {
   debounce,
@@ -145,7 +145,7 @@ import {
 } from "lodash";
 
 type Query = [string, any];
-type Filter = [string, AdvancedFilterValue];
+type Filter = [string, T_AdvancedFilterValue];
 
 type ConfigParseOption = {
   source?: string;
@@ -199,9 +199,9 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  filterOperators: {
-    type: String as PropType<FilterOperators>,
-    default: FilterOperators.FILTERS_EQUAL,
+  E_FilterOperators: {
+    type: String as PropType<E_FilterOperators>,
+    default: E_FilterOperators.FILTERS_EQUAL,
   },
   filtersParam: {
     type: Array as PropType<Filter[]>,
@@ -690,7 +690,7 @@ const setEndPointParams = (newVal: string | number = undefined) => {
             [
               props.searchKey,
               {
-                operator: props.filterOperators,
+                operator: props.E_FilterOperators,
                 value: newSearchTerm?.toString(),
               },
             ],

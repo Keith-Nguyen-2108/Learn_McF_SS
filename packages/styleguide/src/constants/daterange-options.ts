@@ -1,4 +1,4 @@
-export enum DateOption {
+export enum E_DateOption {
   ThisMonth = "This month",
   ThisWeek = "This week",
   Today = "Today",
@@ -17,34 +17,34 @@ export enum DateOption {
   Custom = "Custom Date Range",
 }
 
-export enum QuarterOrder {
+export enum E_QuarterOrder {
   FirstQuarter = "From first quarter",
   SecondQuarter = "From second quarter",
   ThirdQuarter = "From third quarter",
   LastQuarter = "From last quarter",
 }
 
-export const DATE_OPTIONS = [
-  { name: DateOption.ThisMonth },
-  { name: DateOption.ThisWeek },
-  { name: DateOption.Today },
-  { name: DateOption.Yesterday },
-  { name: DateOption.Last7Days },
-  { name: DateOption.Last30Days },
-  { name: DateOption.Last90Days },
-  { name: DateOption.LastMonth },
-  { name: DateOption.Last3Months },
-  { name: DateOption.LastYear },
-  { name: DateOption.WeekToDate },
-  { name: DateOption.MonthToDate },
-  { name: DateOption.QuarterToDate },
-  { name: DateOption.YearToDate },
-  { name: DateOption.Custom },
+export const C_DATE_OPTIONS = [
+  { name: E_DateOption.ThisMonth },
+  { name: E_DateOption.ThisWeek },
+  { name: E_DateOption.Today },
+  { name: E_DateOption.Yesterday },
+  { name: E_DateOption.Last7Days },
+  { name: E_DateOption.Last30Days },
+  { name: E_DateOption.Last90Days },
+  { name: E_DateOption.LastMonth },
+  { name: E_DateOption.Last3Months },
+  { name: E_DateOption.LastYear },
+  { name: E_DateOption.WeekToDate },
+  { name: E_DateOption.MonthToDate },
+  { name: E_DateOption.QuarterToDate },
+  { name: E_DateOption.YearToDate },
+  { name: E_DateOption.Custom },
 ];
 
-export const QUARTER_OPTIONS = [
-  { name: QuarterOrder.FirstQuarter },
-  { name: QuarterOrder.SecondQuarter },
-  { name: QuarterOrder.ThirdQuarter },
-  { name: QuarterOrder.LastQuarter },
+export const C_QUARTER_OPTIONS = [
+  { name: E_QuarterOrder.FirstQuarter },
+  { name: E_QuarterOrder.SecondQuarter },
+  { name: E_QuarterOrder.ThirdQuarter },
+  { name: E_QuarterOrder.LastQuarter },
 ];
