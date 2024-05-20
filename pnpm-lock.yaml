@@ -126,9 +126,9 @@ importers:
 
   packages/common-react:
     dependencies:
-      '@learnss/utils':
+      '@learnss/react-utils':
         specifier: 1.0.0
-        version: link:../utils
+        version: link:../react-utils
       axios:
         specifier: ^1.6.7
         version: 1.6.8

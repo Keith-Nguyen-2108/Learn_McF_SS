@@ -13,7 +13,7 @@ module.exports = (webpackConfigEnv, argv) => {
 
   return merge(defaultConfig, {
     // modify the webpack config however you'd like to by adding to this object
-    externals: ["react", "react-dom"],
+    externals: ["react", "react-dom", "@learnss/react-utils"],
     module: {
       rules: [
         {
@@ -72,6 +72,11 @@ module.exports = (webpackConfigEnv, argv) => {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
+    },
+    performance: {
+      hints: false,
+      maxEntrypointSize: 512000,
+      maxAssetSize: 512000,
     },
   });
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { SelectInputCmp } from "@/components";
+import { SelectInputCmp } from "@learnss/react-utils";
+
 import { userStore } from "@/store";
 
 export default function Root(props) {
