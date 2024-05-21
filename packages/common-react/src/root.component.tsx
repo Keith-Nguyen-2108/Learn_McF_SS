@@ -2,25 +2,23 @@ import { useEffect, useState } from "react";
 
 import { SelectInputCmp } from "@learnss/react-utils";
 
-import { userStore } from "@/store";
+import { useUser } from "@/store";
 
 export default function Root(props) {
-  const fetchList = userStore((state) => state.fetchList) as any;
-  const data = userStore((state) => state.data);
-
-  const [listData, setDataSource] = useState([]);
+  const { fetchUser, listUser } = useUser();
 
   useEffect(() => {
     (async () => {
-      await fetchList();
+      await fetchUser();
     })();
   }, []);
 
-  useEffect(() => {
-    if (data && data.length) setDataSource(data);
-  }, [data]);
-
   return (
-    <SelectInputCmp dataSource={listData} source="id" sourceLabel="name" />
+    <SelectInputCmp
+      label="User List"
+      dataSource={listUser}
+      source="id"
+      sourceLabel="name"
+    />
   );
 }
